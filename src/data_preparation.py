@@ -55,10 +55,58 @@ def load_all_domains(base_path="data"):
 
     return all_texts, all_labels
 
-if __name__ == "__main__":
+def prepare_data():
+    print("Loading dataset...")
     texts, labels = load_all_domains("data")
-    print("Total reviews:", len(texts))
-    print("Example text:", texts[0][:200])
-    print("First 10 labels:", labels[:10])
-    print("Number of positive labels:", sum(labels))
-    print("Number of negative labels:", len(labels) - sum(labels))
+
+    # bỏ review quá ngắn
+    texts2 = []
+    labels2 = []
+    for t, l in zip(texts, labels):
+        if len(t.split()) > 3:
+            texts2.append(t)
+            labels2.append(l)
+
+    texts = texts2
+    labels = labels2
+
+    print(f"Total reviews after filtering: {len(texts)}")
+
+    # shuffle
+    combined = list(zip(texts, labels))
+    random.shuffle(combined)
+    texts, labels = zip(*combined)
+
+    # tokenizer
+    tokenizer = Tokenizer(num_words=20000, oov_token="<OOV>")
+    tokenizer.fit_on_texts(texts)
+
+    # save tokenizer
+    os.makedirs("saved_model", exist_ok=True)
+    with open("saved_model/tokenizer.pkl", "wb") as f:
+        pickle.dump(tokenizer, f)
+
+    # sequences + pad
+    sequences = tokenizer.texts_to_sequences(texts)
+    X = pad_sequences(sequences, maxlen=120, padding="post", truncating="post")
+    y = list(labels)
+
+    # split train / val / test
+    X_train, X_temp, y_train, y_temp = train_test_split(
+        X, y, test_size=0.30, random_state=42
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_temp, y_temp, test_size=0.50, random_state=42
+    )
+
+    print("Shapes:")
+    print("  X_train:", X_train.shape, "y_train:", len(y_train))
+    print("  X_val:  ", X_val.shape, "y_val:", len(y_val))
+    print("  X_test: ", X_test.shape, "y_test:", len(y_test))
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
+
+if __name__ == "__main__":
+    print("Running test for prepare_data() ...")
+    X_train, X_val, X_test, y_train, y_val, y_test = prepare_data()
+    print("Data preparation finished.")
