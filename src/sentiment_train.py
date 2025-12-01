@@ -67,3 +67,13 @@ if __name__ == "__main__":
         callbacks=[early_stop],
         verbose=2
     )
+
+    print("Evaluating model on test set...")
+    loss, acc = model.evaluate(X_test, np.array(y_test), verbose=0)
+    print(f"Test Accuracy: {acc:.4f}")
+
+    # Save model
+    os.makedirs("saved_model", exist_ok=True)
+    model_path = os.path.join("saved_model", "sentiment_model.h5")
+    model.save(model_path)
+    print(f"Model saved to {model_path}")
