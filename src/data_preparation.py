@@ -19,8 +19,15 @@ def load_reviews(path):
             reviews.append(content)
     return reviews
 
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9\s]", " ", text)   # remove strange characters, punctuation
+    text = re.sub(r"\s+", " ", text).strip()   # combine multiple spaces into 1
+    return text
+
 
 if __name__ == "__main__":
-    sample = load_reviews("data/dvd_positive.review")  # đổi thành file bạn có
-    print("Loaded reviews:", len(sample))
-    print("First review sample:\n", sample[0][:300])
+    raw = "This Product is AMAZING!!! :)   10/10, would buy again..."
+    cleaned = clean_text(raw)
+    print("RAW:     ", raw)
+    print("CLEANED: ", cleaned)
