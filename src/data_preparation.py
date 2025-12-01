@@ -25,9 +25,40 @@ def clean_text(text):
     text = re.sub(r"\s+", " ", text).strip()   # combine multiple spaces into 1
     return text
 
+def load_all_domains(base_path="data"):
+    domains = [
+        "book",
+        "dvd",
+        "electronics",
+        "kitchen"
+    ]
+
+    all_texts = []
+    all_labels = []
+
+    for domain in domains:
+        pos_path = os.path.join(base_path, f"{domain}_positive.review")
+        neg_path = os.path.join(base_path, f"{domain}_negative.review")
+
+        pos_reviews = load_reviews(pos_path)
+        neg_reviews = load_reviews(neg_path)
+
+        # clean text
+        pos_reviews = [clean_text(r) for r in pos_reviews]
+        neg_reviews = [clean_text(r) for r in neg_reviews]
+
+        all_texts.extend(pos_reviews)
+        all_labels.extend([1] * len(pos_reviews))
+
+        all_texts.extend(neg_reviews)
+        all_labels.extend([0] * len(neg_reviews))
+
+    return all_texts, all_labels
 
 if __name__ == "__main__":
-    raw = "This Product is AMAZING!!! :)   10/10, would buy again..."
-    cleaned = clean_text(raw)
-    print("RAW:     ", raw)
-    print("CLEANED: ", cleaned)
+    texts, labels = load_all_domains("data")
+    print("Total reviews:", len(texts))
+    print("Example text:", texts[0][:200])
+    print("First 10 labels:", labels[:10])
+    print("Number of positive labels:", sum(labels))
+    print("Number of negative labels:", len(labels) - sum(labels))
