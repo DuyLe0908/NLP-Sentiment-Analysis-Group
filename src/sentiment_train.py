@@ -51,3 +51,19 @@ if __name__ == "__main__":
     print("Building model...")
     model = build_model()
     model.summary()
+
+    early_stop = EarlyStopping(
+        monitor="val_loss",
+        patience=2,
+        restore_best_weights=True
+    )
+
+    print("Training model...")
+    history = model.fit(
+        X_train, np.array(y_train),
+        epochs=5,
+        batch_size=128,
+        validation_data=(X_val, np.array(y_val)),
+        callbacks=[early_stop],
+        verbose=2
+    )
