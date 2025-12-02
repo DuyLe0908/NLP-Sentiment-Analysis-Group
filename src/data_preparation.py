@@ -59,7 +59,7 @@ def prepare_data():
     print("Loading dataset...")
     texts, labels = load_all_domains("data")
 
-    # bỏ review quá ngắn
+    # delete short review
     texts2 = []
     labels2 = []
     for t, l in zip(texts, labels):
