@@ -21,3 +21,7 @@ Sentiment models like LSTMs behave as “black-box” predictors. Users should b
 6. Responsible Use
 
 The model should not be used to make high-impact decisions such as hiring, lending, or personal assessment. It is only suitable for simple product review sentiment tasks. Misuse of the model outside this context may cause harm or unfair outcomes.
+
+7. Model Bias due to Lexical Over-Reliance 
+
+Our model struggles with short negated expressions such as ‘not bad’. Although humans interpret this as mildly positive, the model heavily relies on the presence of the word ‘bad’, which is strongly associated with negative sentiment in the training data
